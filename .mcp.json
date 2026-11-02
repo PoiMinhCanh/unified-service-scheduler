@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "sqlserver": {
+      "command": "C:\\toolbox\\toolbox.exe",
+      "args": ["--prebuilt", "mssql", "--stdio"],
+      "env": {
+        "MSSQL_HOST": "127.0.0.1",
+        "MSSQL_PORT": "1433",
+        "MSSQL_DATABASE": "ServiceScheduler",
+        "MSSQL_USER": "scheduler_app",
+        "MSSQL_PASSWORD": "YOUR PASSWORD"
+      }
+    },
+    "oraios/serena": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "-p",
+        "3.13",
+        "--from",
+        "D:\\serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "claude-code",
+        "--project",
+        "d:\\Keyloop\\unified-service-scheduler"
+      ]
+    }
+  }
+}

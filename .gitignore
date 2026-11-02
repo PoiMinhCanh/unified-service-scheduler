@@ -1,0 +1,24 @@
+# Local secrets and machine-specific configuration.
+.env
+.env.*
+!.env.example
+!.env.*.example
+**/appsettings.Local.json
+**/appsettings.*.Local.json
+.claude/settings.local.json
+.mcp.local.json
+*.user
+*.suo
+.vs/
+.idea/
+.obsidian/
+.serena/
+
+# .NET build/test outputs and local dependency data.
+**/bin/
+**/obj/
+**/TestResults/
+**/coverage/
+*.trx
+*.coverage
+.data/

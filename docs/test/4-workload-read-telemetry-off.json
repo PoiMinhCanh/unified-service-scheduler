@@ -1,0 +1,39 @@
+{
+  "label": "read-telemetry-off-t4",
+  "scenario": "read",
+  "cacheMode": "cold",
+  "concurrency": 8,
+  "warmupSeconds": 5,
+  "durationSeconds": 20,
+  "startedAtUtc": "2026-11-01T20:14:36.0289057+00:00",
+  "completedAtUtc": "2026-11-01T20:15:01.5243517+00:00",
+  "requestCount": 4448,
+  "throughputPerSecond": 222.08045398676978,
+  "latencyMs": {
+    "p50": 32.54,
+    "p95": 75.3852,
+    "p99": 101.3916,
+    "max": 149.6114
+  },
+  "statusCounts": {
+    "200": 4448
+  },
+  "problemCodeCounts": {},
+  "bookingOutcomes": {},
+  "appointmentIds": [],
+  "cleanup": {
+    "status": "Passed",
+    "deletedAppointments": 0,
+    "finalAppointmentCount": 2
+  },
+  "environment": {
+    "os": "Microsoft Windows 10.0.26200",
+    "dotnet": "10.0.14",
+    "docker": "25.0.3",
+    "compose": "2.24.6-desktop.1",
+    "baseUrl": "http://127.0.0.1:8080/",
+    "telemetryEnabled": "false",
+    "samplingRatio": "n/a",
+    "label": "read-telemetry-off-t4"
+  }
+}

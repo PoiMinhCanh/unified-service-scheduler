@@ -1,0 +1,110 @@
+{
+  "env": {
+    "ENABLE_TOOL_SEARCH": "true"
+  },
+  "permissions": {
+    "allow": [
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_run_code",
+      "mcp__playwright__browser_close",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__sqlserver__execute_sql",
+      "mcp__sqlserver__list_tables",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__performance_start_trace",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__evaluate_script",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__press_key",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__wait_for",
+      "mcp__chrome-devtools__click",
+      "mcp__chrome-devtools__type_text",
+      "mcp__chrome-devtools__fill",
+      "mcp__chrome-devtools__fill_form",
+      "mcp__chrome-devtools__list_network_requests",
+      "mcp__chrome-devtools__get_network_request",
+      "mcp__oraios_serena__activate_project",
+      "mcp__oraios_serena__check_onboarding_performed",
+      "mcp__oraios_serena__find_file",
+      "mcp__oraios_serena__find_referencing_symbols",
+      "mcp__oraios_serena__find_symbol",
+      "mcp__oraios_serena__get_current_config",
+      "mcp__oraios_serena__get_symbols_overview",
+      "mcp__oraios_serena__initial_instructions",
+      "mcp__oraios_serena__list_dir",
+      "mcp__oraios_serena__list_memories",
+      "mcp__oraios_serena__onboarding",
+      "mcp__oraios_serena__read_memory",
+      "mcp__oraios_serena__search_for_pattern",
+      "Bash(docker ps:*)",
+      "WebFetch(domain:www.nuget.org)",
+      "mcp__playwright__browser_select_option"
+    ],
+    "deny": [
+      "mcp__oraios_serena__replace_content",
+      "mcp__oraios_serena__replace_in_files",
+      "mcp__oraios_serena__replace_symbol_body",
+      "mcp__oraios_serena__insert_after_symbol",
+      "mcp__oraios_serena__insert_before_symbol",
+      "mcp__oraios_serena__safe_delete_symbol",
+      "mcp__oraios_serena__rename_symbol",
+      "mcp__oraios_serena__create_text_file",
+      "mcp__oraios_serena__delete_lines",
+      "mcp__oraios_serena__replace_lines",
+      "mcp__oraios_serena__insert_at_line",
+      "mcp__oraios_serena__execute_shell_command",
+      "mcp__oraios_serena__write_memory",
+      "mcp__oraios_serena__edit_memory",
+      "mcp__oraios_serena__delete_memory",
+      "mcp__oraios_serena__rename_memory",
+      "mcp__oraios_serena__jet_brains_move",
+      "mcp__oraios_serena__jet_brains_safe_delete",
+      "mcp__oraios_serena__jet_brains_inline_symbol",
+      "mcp__oraios_serena__jet_brains_rename"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uvx -p 3.13 --from D:/serena serena-hooks activate --client=claude-code"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uvx -p 3.13 --from D:/serena serena-hooks remind --client=claude-code"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uvx -p 3.13 --from D:/serena serena-hooks cleanup --client=claude-code"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true
+  }
+}

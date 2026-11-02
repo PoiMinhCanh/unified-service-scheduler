@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+# Metrics are pushed by the OpenTelemetry Collector through the OTLP/HTTP receiver.
+otlp:
+  promote_resource_attributes:
+    - deployment.environment.name
+    - service.version
+  translation_strategy: UnderscoreEscapingWithSuffixes
+
+scrape_configs: []

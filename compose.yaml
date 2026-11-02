@@ -1,0 +1,143 @@
+name: unified-service-scheduler
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-CU23-ubuntu-22.04
+    platform: linux/amd64
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "${MSSQL_PID:-Developer}"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in .env}"
+    ports:
+      - "127.0.0.1:1433:1433"
+    volumes:
+      - scheduler-sql-data:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4.12-alpine
+    platform: linux/amd64
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped
+
+  db-setup:
+    build:
+      context: .
+      target: setup
+      dockerfile: src/ServiceScheduler.Api/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__Setup: "${ConnectionStrings__Setup:?Set ConnectionStrings__Setup in .env}"
+      Scheduler__RuntimePassword: "${Scheduler__RuntimePassword:?Set Scheduler__RuntimePassword in .env}"
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      target: runtime
+      dockerfile: src/ServiceScheduler.Api/Dockerfile
+    depends_on:
+      db-setup:
+        condition: service_completed_successfully
+    environment:
+      ConnectionStrings__Runtime: "${ConnectionStrings__Runtime:?Set ConnectionStrings__Runtime in .env}"
+      ConnectionStrings__Cache: "${ConnectionStrings__Cache:?Set ConnectionStrings__Cache in .env}"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT:-Development}"
+      Scheduler__Telemetry__Enabled: "true"
+      Scheduler__Telemetry__OtlpEndpoint: "http://collector:4317"
+      Scheduler__Telemetry__SamplingRatio: "1.0"
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
+  collector:
+    image: otel/opentelemetry-collector:0.164.0
+    platform: linux/amd64
+    command: ["--config=/etc/otelcol/collector.yaml"]
+    volumes:
+      - ./telemetry/collector.yaml:/etc/otelcol/collector.yaml:ro
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:4318:4318"
+      - "127.0.0.1:13133:13133"
+    depends_on:
+      prometheus:
+        condition: service_started
+      tempo:
+        condition: service_started
+    mem_limit: 256m
+    cpus: 1.0
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    platform: linux/amd64
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=24h
+      - --storage.tsdb.retention.size=512MB
+      - --web.enable-otlp-receiver
+      - --web.listen-address=0.0.0.0:9090
+    volumes:
+      - ./telemetry/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - scheduler-prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    mem_limit: 512m
+    cpus: 1.0
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:3.1.1
+    platform: linux/amd64
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./telemetry/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - scheduler-tempo-data:/var/tempo
+    ports:
+      - "127.0.0.1:3200:3200"
+    mem_limit: 512m
+    cpus: 1.0
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.3.0
+    platform: linux/amd64
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./telemetry/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./telemetry/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - scheduler-grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_started
+      tempo:
+        condition: service_started
+    mem_limit: 512m
+    cpus: 1.0
+    restart: unless-stopped
+
+volumes:
+  scheduler-sql-data:
+  scheduler-prometheus-data:
+  scheduler-tempo-data:
+  scheduler-grafana-data:

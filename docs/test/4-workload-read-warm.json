@@ -1,0 +1,39 @@
+{
+  "label": "read-warm-t4",
+  "scenario": "read",
+  "cacheMode": "warm",
+  "concurrency": 8,
+  "warmupSeconds": 5,
+  "durationSeconds": 20,
+  "startedAtUtc": "2026-11-01T20:13:06.0691768+00:00",
+  "completedAtUtc": "2026-11-01T20:13:31.4047973+00:00",
+  "requestCount": 8572,
+  "throughputPerSecond": 428.1312861492367,
+  "latencyMs": {
+    "p50": 16.0677,
+    "p95": 44.0412,
+    "p99": 66.6989,
+    "max": 138.761
+  },
+  "statusCounts": {
+    "200": 8572
+  },
+  "problemCodeCounts": {},
+  "bookingOutcomes": {},
+  "appointmentIds": [],
+  "cleanup": {
+    "status": "Passed",
+    "deletedAppointments": 0,
+    "finalAppointmentCount": 2
+  },
+  "environment": {
+    "os": "Microsoft Windows 10.0.26200",
+    "dotnet": "10.0.14",
+    "docker": "25.0.3",
+    "compose": "2.24.6-desktop.1",
+    "baseUrl": "http://127.0.0.1:8080/",
+    "telemetryEnabled": "true",
+    "samplingRatio": "1.0",
+    "label": "read-warm-t4"
+  }
+}
